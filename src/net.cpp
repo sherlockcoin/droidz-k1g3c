@@ -1141,15 +1141,16 @@ static const char *strDNSSeed[][2] = {
     {"drz-seed1.granitecoin.com", "drz-seed1.granitecoin.com"},
     {"drz-seed2.granitecoin.com", "drz-seed2.granitecoin.com"},
     {"drz-seed3.granitecoin.com", "drz-seed3.granitecoin.com"},
-    {"Droidz1", "52.10.83.0"},
-    {"Droidz2", "94.213.50.182"},
-    {"Droidz3", "162.213.195.88"},
-    {"Droidz4", "68.197.2.158"},
-    {"Droidz5", "188.165.3.6"},
-    {"Droidz6", "85.25.214.214"},
-    {"Droidz7", "24.49.122.218"},
-    {"Droidz8", "79.69.39.40"},
-	
+
+// below are the old seed ip addresses - preserved for archival purposes ...	
+//    {"Droidz1", "52.10.83.0"},
+//    {"Droidz2", "94.213.50.182"},
+//    {"Droidz3", "162.213.195.88"},
+//    {"Droidz4", "68.197.2.158"},
+//    {"Droidz5", "188.165.3.6"},
+//    {"Droidz6", "85.25.214.214"},
+//    {"Droidz7", "24.49.122.218"},
+//    {"Droidz8", "79.69.39.40"},
 };
 
 void ThreadDNSAddressSeed(void* parg)
