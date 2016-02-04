@@ -3,10 +3,10 @@
 
 TEMPLATE = app
 TARGET = droidz-qt
-VERSION = 2.4.0.0
+VERSION = 2.5.0.0
 INCLUDEPATH += src src/json src/qt 
 DEFINES += QT_BUILD_STATIC QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
-QT += core gui network webkit
+QT += core gui network
 CONFIG += no_include_pwd
 CONFIG += thread
 CONFIG += static
@@ -14,8 +14,24 @@ CONFIG += static
 QMAKE_CXXFLAGS = -fpermissive
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets webkitwidgets
+    QT += widgets
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x040800
+}
+
+windows{
+BOOST_LIB_SUFFIX=-mgw48-mt-s-1_53
+BOOST_INCLUDE_PATH=C:/deps/boost_1_53_0
+BOOST_LIB_PATH=C:/deps/boost_1_53_0/stage/lib
+BDB_INCLUDE_PATH=C:/deps/db-6.0.20.NC/build_unix
+BDB_LIB_PATH=C:/deps/db-6.0.20.NC/build_unix
+OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1g/include
+OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1g
+MINIUPNPC_INCLUDE_PATH=C:/deps
+LIBPNG_INCLUDE_PATH=C:/deps/libpng-1.6.10
+LIBPNG_LIB_PATH=C:/deps/libpng-1.6.10/.libs
+MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
+QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.3
+QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.3/.libs
 }
 
 # for boost 1.37, add -mt to the boost libraries
@@ -196,10 +212,6 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/blockbrowser.h \
     src/qt/serveur.h \
     src/qt/chatwindow.h \
-    src/qt/tradingdialog.h \
-    src/qt/bittrex.h \
-    src/qt/ccex.h \
-    src/qt/yobit.h \
     src/alert.h \
     src/addrman.h \
     src/base58.h \
@@ -294,10 +306,6 @@ SOURCES += src/qt/bitcoin.cpp \
     src/qt/blockbrowser.cpp \
     src/qt/serveur.cpp \
     src/qt/chatwindow.cpp \
-    src/qt/tradingdialog.cpp \
-    src/qt/bittrex.cpp \
-    src/qt/ccex.cpp \
-    src/qt/yobit.cpp \
 	src/alert.cpp \
 	src/version.cpp \
 	src/sync.cpp \
@@ -376,11 +384,7 @@ FORMS += \
     src/qt/forms/optionsdialog.ui \
     src/qt/forms/statisticspage.ui \
     src/qt/forms/blockbrowser.ui \
-    src/qt/forms/chatwindow.ui \
-    src/qt/forms/bittrex.ui \
-    src/qt/forms/ccex.ui \
-    src/qt/forms/yobit.ui \
-    src/qt/forms/tradingdialog.ui
+    src/qt/forms/chatwindow.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h
@@ -454,7 +458,7 @@ isEmpty(QRENCODE_INCLUDE_PATH) {
     macx:QRENCODE_INCLUDE_PATH = /opt/local/include
 }
 
-windows:DEFINES += WIN32
+windows:DEFINES += WIN32 WIN32_LEAN_AND_MEAN
 windows:RC_FILE = src/qt/res/bitcoin-qt.rc
 
 windows:!contains(MINGW_THREAD_BUGFIX, 0) {
@@ -493,7 +497,6 @@ LIBS += -lboost_system$$BOOST_LIB_SUFFIX \
     -lboost_filesystem$$BOOST_LIB_SUFFIX \
     -lboost_program_options$$BOOST_LIB_SUFFIX \
     -lboost_thread$$BOOST_THREAD_LIB_SUFFIX \
-    -lboost_date_time$$BOOST_THREAD_LIB_SUFFIX \
     -lboost_chrono$$BOOST_LIB_SUFFIX
 
 contains(RELEASE, 1) {

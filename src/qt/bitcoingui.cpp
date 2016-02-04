@@ -22,10 +22,6 @@
 #include "statisticspage.h"
 #include "blockbrowser.h"
 #include "chatwindow.h"
-#include "tradingdialog.h"
-#include "bittrex.h"
-#include "ccex.h"
-#include "yobit.h"
 #include "bitcoinunits.h"
 #include "guiconstants.h"
 #include "askpassphrasedialog.h"
@@ -121,10 +117,6 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     statisticsPage = new StatisticsPage(this);
     blockBrowser = new BlockBrowser(this);
     chatWindow = new ChatWindow(this);
-    tradingDialogPage = new tradingDialog(this);
-    bittrexPage = new Bittrex(this);
-    ccexPage = new Ccex(this);
-    yobitPage = new Yobit(this);
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
     transactionView = new TransactionView(this);
@@ -148,10 +140,6 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     centralWidget->addWidget(sendCoinsPage);
     centralWidget->addWidget(blockBrowser);
     centralWidget->addWidget(chatWindow);
-    centralWidget->addWidget(tradingDialogPage);
-    centralWidget->addWidget(bittrexPage);
-    centralWidget->addWidget(ccexPage);
-    centralWidget->addWidget(yobitPage);
     setCentralWidget(centralWidget);
 
     // Create status bar
@@ -197,8 +185,6 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     // Clicking on a transaction on the overview page simply sends you to transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), this, SLOT(gotoHistoryPage()));
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
-
-    connect(TradingAction, SIGNAL(triggered()), tradingDialogPage, SLOT(InitTrading()));
 
     // Double-clicking on a transaction on the transaction history page shows details
     connect(transactionView, SIGNAL(doubleClicked(QModelIndex)), transactionView, SLOT(showDetails()));
@@ -248,33 +234,7 @@ void BitcoinGUI::createActions()
     chatAction->setToolTip(tr("View chat"));
     chatAction->setCheckable(true);
     tabGroup->addAction(chatAction);
-
-    TradingAction = new QAction(QIcon(":/icons/droidz"), tr("&BITTREX TRADE"), this);
-    TradingAction ->setToolTip(tr("Start Trading"));
-    TradingAction ->setCheckable(true);
-    TradingAction ->setShortcut(QKeySequence(Qt::ALT + Qt::Key_8));
-    TradingAction->setProperty("objectName","TradingAction");
-    tabGroup->addAction(TradingAction);
-
-    bittrexAction = new QAction(QIcon(":/icons/droidz"), tr("&BITTREX"), this);
-    bittrexAction->setToolTip(tr("Bittrex"));
-    bittrexAction->setCheckable(true);
-    bittrexAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_0));
-    tabGroup->addAction(bittrexAction);
-
-    ccexAction = new QAction(QIcon(":/icons/droidz"), tr("&C-CEX"), this);
-    ccexAction->setToolTip(tr("Ccex"));
-    ccexAction->setCheckable(true);
-    ccexAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
-    tabGroup->addAction(ccexAction);
-
-    yobitAction = new QAction(QIcon(":/icons/droidz"), tr("&YOBIT"), this);
-    yobitAction->setToolTip(tr("Yobit"));
-    yobitAction->setCheckable(true);
-    yobitAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
-    tabGroup->addAction(yobitAction);
     
-
     sendCoinsAction = new QAction(QIcon(":/icons/droidz"), tr("&SEND COINS"), this);
     sendCoinsAction->setToolTip(tr("Send coins to a DROIDZ address"));
     sendCoinsAction->setCheckable(true);
@@ -312,13 +272,6 @@ void BitcoinGUI::createActions()
     connect(addressBookAction, SIGNAL(triggered()), this, SLOT(gotoAddressBookPage()));
     connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
     connect(chatAction, SIGNAL(triggered()), this, SLOT(gotoChatPage()));
-    connect(TradingAction, SIGNAL(triggered()), this, SLOT(gotoTradingPage()));
-    connect(bittrexAction, SIGNAL(triggered()), this, SLOT(gotoBittrexPage()));
-    connect(bittrexAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(ccexAction, SIGNAL(triggered()), this, SLOT(gotoCcexPage()));
-    connect(ccexAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(yobitAction, SIGNAL(triggered()), this, SLOT(gotoYobitPage()));
-    connect(yobitAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     
 
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
@@ -421,9 +374,6 @@ void BitcoinGUI::createToolBars()
     toolbar->addAction(blockAction);
     toolbar->addAction(statisticsAction);
     toolbar->addAction(chatAction);
-    toolbar->addAction(bittrexAction);
-    toolbar->addAction(yobitAction);
-    toolbar->addAction(ccexAction);
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolbar->addWidget(spacer);
@@ -759,6 +709,8 @@ void BitcoinGUI::incomingTransaction(const QModelIndex & parent, int start, int 
                         .data().toString();
         QString address = ttm->index(start, TransactionTableModel::ToAddress, parent)
                         .data().toString();
+		QString txcomment = ttm->index(start, TransactionTableModel::TxComment, parent)
+                        .data().toString();
         QIcon icon = qvariant_cast<QIcon>(ttm->index(start,
                             TransactionTableModel::ToAddress, parent)
                         .data(Qt::DecorationRole));
@@ -773,7 +725,7 @@ void BitcoinGUI::incomingTransaction(const QModelIndex & parent, int start, int 
                               .arg(date)
                               .arg(BitcoinUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
                               .arg(type)
-                              .arg(address), icon);
+                              .arg(address + (txcomment.length() > 0 ? ("\n" + txcomment) : "") ), icon);
     }
 }
 
@@ -810,43 +762,6 @@ void BitcoinGUI::gotoChatPage()
 {
     chatAction->setChecked(true);
     centralWidget->setCurrentWidget(chatWindow);
-
-    exportAction->setEnabled(false);
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-}
-
-void BitcoinGUI::gotoTradingPage()
-{
-
-     TradingAction->setChecked(true);
-     centralWidget->setCurrentWidget(tradingDialogPage);
-
-  //  exportAction->setEnabled(false);
-  //  disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-}
-
-void BitcoinGUI::gotoBittrexPage()
-{
-    bittrexAction->setChecked(true);
-    centralWidget->setCurrentWidget(bittrexPage);
-
-    exportAction->setEnabled(false);
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-}
-
-void BitcoinGUI::gotoCcexPage()
-{
-    ccexAction->setChecked(true);
-    centralWidget->setCurrentWidget(ccexPage);
-
-    exportAction->setEnabled(false);
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-}
-
-void BitcoinGUI::gotoYobitPage()
-{
-    yobitAction->setChecked(true);
-    centralWidget->setCurrentWidget(yobitPage);
 
     exportAction->setEnabled(false);
     disconnect(exportAction, SIGNAL(triggered()), 0, 0);

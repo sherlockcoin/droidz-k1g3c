@@ -5,9 +5,6 @@
 #include <QSystemTrayIcon>
 
 #include <stdint.h>
-#include "bittrex.h"
-#include "ccex.h"
-#include "yobit.h"
 
 class TransactionTableModel;
 class ClientModel;
@@ -79,10 +76,6 @@ private:
 
     BlockBrowser *blockBrowser;
     ChatWindow *chatWindow;
-    tradingDialog *tradingDialogPage;
-    Bittrex *bittrexPage;
-    Ccex *ccexPage;
-    Yobit *yobitPage;
 
     QLabel *labelEncryptionIcon;
     QLabel *labelStakingIcon;
@@ -96,10 +89,6 @@ private:
     QAction *statisticsAction;
     QAction *blockAction;
     QAction *chatAction;
-    QAction *TradingAction;
-    QAction *bittrexAction;
-    QAction *ccexAction;
-    QAction *yobitAction;
     QAction *historyAction;
     QAction *quitAction;
     QAction *sendCoinsAction;
@@ -179,13 +168,6 @@ private slots:
     /** Switch to chat page*/
     void gotoChatPage();
     /** Switch to trading page */
-    void gotoTradingPage();
-    /** Switch to bittrex page */
-    void gotoBittrexPage();
-    /** Switch to ccex page */
-    void gotoCcexPage();
-    /** Switch to yobit page */
-    void gotoYobitPage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
