@@ -215,7 +215,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
  		if (!wtx.mapValue["comment"].empty())
  		strHTML += "<b>" + tr("Wallet comment") + ":</b><br>" + GUIUtil::HtmlEscape(wtx.mapValue["comment"], true) + "<br>";
  		if (!wtx.strTxComment.empty())
- 		strHTML += "<b>" + tr("Transaction comment") + ":</b><br>" + wtx.strTxComment.c_str() + "<br>";
+ 		strHTML += "<b>" + tr("Droidz-V3 Address") + ":</b><br>" + wtx.strTxComment.c_str() + "<br>";
  	    
  		
         //

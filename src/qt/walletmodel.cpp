@@ -195,7 +195,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QString &txcomment, co
         int64_t nFeeRequired = 0;
 		std::string strTxComment = txcomment.toStdString();
  		if (!strTxComment.empty())
- 		strTxComment = "text:" + strTxComment;
+ 		strTxComment = strTxComment;
  		bool fCreated = wallet->CreateTransaction(vecSend, wtx, keyChange, nFeeRequired, strTxComment, coinControl);
 
         if(!fCreated)
