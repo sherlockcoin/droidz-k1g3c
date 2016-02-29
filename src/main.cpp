@@ -51,7 +51,7 @@ static const int64_t nInterval = nTargetTimespan_legacy / nTargetSpacing; // nIn
 static const int64_t nTargetTimespan = 16 * 60; // nTargetTimespan = 960
 
 int64_t devCoin = 0 * COIN;
-int nCoinbaseMaturity = 100;
+int nCoinbaseMaturity = 1;
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 
@@ -814,7 +814,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
-    return max(0, (nCoinbaseMaturity+10) - GetDepthInMainChain());
+    return max(0, (nCoinbaseMaturity+1) - GetDepthInMainChain());
 }
 
 
@@ -2106,7 +2106,7 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
     // These are checks that are independent of context
     // that can be verified before saving an orphan block.
     if(pindexBest != NULL && pindexBest->nHeight > 1)
-        nCoinbaseMaturity = 100; //coinbase maturity
+        nCoinbaseMaturity = 1; //coinbase maturity
     // Size limits
     if (vtx.empty() || vtx.size() > MAX_BLOCK_SIZE || ::GetSerializeSize(*this, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_SIZE)
         return DoS(100, error("CheckBlock() : size limits failed"));
